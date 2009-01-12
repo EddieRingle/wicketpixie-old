@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: WicketPixie Source Manager
-Plugin URI: http://chrispirillo.com
+Plugin URI: http://chris.pirillo.com
 Description: Management Screen for the sources in WicketPixie
 Author: Chris J. Davis
 Version: 1.0
-Author URI: http://chrispirillo.com
+Author URI: http://chris.pirillo.com
 */
 
 class SourceAdmin {
@@ -81,7 +81,7 @@ class SourceAdmin {
 	*/
 	public function addMenu() {
 		add_management_page( __('WicketPixie Sources'), __('WicketPixie Sources'), 9, basename(__FILE__), array( 'SourceAdmin', 'sourceMenu' ) );
-	}
+	} 
 	
 	private function fetch_remote_file( $file ) {
 
@@ -130,7 +130,7 @@ class SourceAdmin {
 		if ( $cache ) {
 			file_put_contents( ABSPATH . $folder . md5( $url['host'] ) . '.ico', $cache );
 			$icon= get_option( 'siteurl' ) . '/' . $folder . md5( $url['host'] ) . '.ico';
-			} elseif( is_file( ABSPATH . '/wp-content/themes/wicketpixie/images/icon-source.gif' ) ) {
+			} elseif( is_file( ABSPATH . 'wp-content/themes/wicketpixie/images/icon-source.gif' ) ) {
 				$icon= get_option( 'siteurl' ) . '/wp-content/themes/wicketpixie/images/icon-source.gif';
 		}
 		
@@ -159,18 +159,22 @@ class SourceAdmin {
 	
 	public function clean_dir() {
 		$cache= ABSPATH . 'wp-content/uploads/activity/';
-		$d= dir( $cache );
-		while( $entry= $d->read() ) {
-			if ( $entry!= "." && $entry!= ".." ) {
-				unlink( $cache . $entry );	
-			}
-		 }
-		$d->close();
+        clearstatcache();
+        if(is_dir($cache))
+        {
+        	$d= dir( $cache );
+            while( $entry= $d->read() ) {
+                if ( $entry!= "." && $entry!= ".." ) {
+                    unlink( $cache . $entry );	
+                }
+            }
+            $d->close();
+        }
 	}
 	
 	private function get_streams() {
 		global $wpdb;
-		require_once ( ABSPATH . '/wp-content/plugins/simplepie.php' );
+		require_once ( ABSPATH . 'wp-content/themes/wicketpixie/plugins/simplepie.php' );
 		self::clean_dir();
 
 		$table= $wpdb->prefix . 'wik_sources';
@@ -178,7 +182,7 @@ class SourceAdmin {
 		
 		foreach ( $streams as $stream ) {
 			$feed_path= $stream->feed_url;
-			$feed= new SimplePie( (string) $feed_path, ABSPATH . '/' . (string) '/wp-content/uploads/activity/' );
+			$feed= new SimplePie( (string) $feed_path, ABSPATH . (string) 'wp-content/uploads/activity' );
 			$feed->set_cache_duration(10);
 			$feed->handle_content_type();
 			if( $feed->data ) {
@@ -463,27 +467,27 @@ class SourceAdmin {
 	}
 
 	public function get_feed( $url ) {
-		require_once (ABSPATH . '/wp-content/plugins/simplepie.php');
-			$feed_path= $url;
-			$feed= new SimplePie( (string) $feed_path, ABSPATH . '/' . (string) '/wp-content/uploads/activity/' );
+        require_once (ABSPATH . 'wp-content/themes/wicketpixie/plugins/simplepie.php');
+        $feed_path= $url;
+        $feed= new SimplePie( (string) $feed_path, ABSPATH . (string) 'wp-content/uploads/activity' );
 
-			self::clean_dir();
+        self::clean_dir();
 
-			$feed->handle_content_type();
-				if( $feed->data ) {
-					foreach( $feed->get_items() as $entry ) {
-						$name= $stream->title;
-						$date = strtotime( substr( $entry->get_date(), 0, 25 ) );
-						$widget_contents[$date]['name']= (string) $name;
-						$widget_contents[$date]['title']= $entry->get_title();
-						$widget_contents[$date]['link']= $entry->get_permalink();
-						$widget_contents[$date]['date']= strtotime( substr( $entry->get_date(), 0, 25 ) );
-						if ( $enclosure = $entry->get_enclosure( 0 ) ) {
-							$widget_contents[$date]['enclosure'] = $enclosure->get_link();
-						}
-					}
-				}
-				return $widget_contents;
+        $feed->handle_content_type();
+            if( $feed->data ) {
+                foreach( $feed->get_items() as $entry ) {
+                    $name= $stream->title;
+                    $date = strtotime( substr( $entry->get_date(), 0, 25 ) );
+                    $widget_contents[$date]['name']= (string) $name;
+                    $widget_contents[$date]['title']= $entry->get_title();
+                    $widget_contents[$date]['link']= $entry->get_permalink();
+                    $widget_contents[$date]['date']= strtotime( substr( $entry->get_date(), 0, 25 ) );
+                    if ( $enclosure = $entry->get_enclosure( 0 ) ) {
+                        $widget_contents[$date]['enclosure'] = $enclosure->get_link();
+                    }
+                }
+            }
+            return $widget_contents;
 	}
 
 	private function create_file( $widget ) {
@@ -520,7 +524,7 @@ class SourceAdmin {
 		*/
 		$path= ABSPATH . "wp-content/themes/wicketpixie/widgets/" . $cleaned . ".php";
 		file_put_contents( $path, $data );
-		error_log( 'Creating widget.' );
+		error_log( 'Creating '.$widget->title.' widget.' );
 	}
 
 	private function create_widget() {
@@ -578,8 +582,18 @@ class SourceAdmin {
 			}
 		}
 		?>
-		<?php if ( isset( $_REQUEST['add'] ) ) { ?>
+		<?php if(isset($_REQUEST['add'])) { ?>
 		<div id="message" class="updated fade"><p><strong><?php echo __('Source saved.'); ?></strong></p></div>
+		<?php } elseif(isset($_REQUEST['edit'])) { ?>
+        <div id="message" class="updated fade"><p><strong><?php echo __('Source modified.'); ?></strong></p></div>
+		<?php } elseif(isset($_REQUEST['delete'])) { ?>
+        <div id="message" class="updated fade"><p><strong><?php echo __('Source removed.'); ?></strong></p></div>
+		<?php } elseif(isset($_REQUEST['flush'])) { ?>
+        <div id="message" class="updated fade"><p><strong><?php echo __('Source flushed.'); ?></strong></p></div>
+		<?php } elseif(isset($_REQUEST['install'])) { ?>
+        <div id="message" class="updated fade"><p><strong><?php echo __('SourceManager installed.'); ?></strong></p></div>
+		<?php } elseif(isset($_REQUEST['hulk_smash'])) { ?>
+        <div id="message" class="updated fade"><p><strong><?php echo __('Sources cleared.'); ?></strong></p></div>
 		<?php } ?>
 			<div class="wrap">
 				
@@ -709,18 +723,8 @@ class SourceAdmin {
 								</p>
 							</form>
 						<?php } ?>
-                        <div id="admin-affiliates">
-                            A free premium Wordpress theme provided by <a href="http://chris.pirillo.com/" title="Chris Pirillo">Chris Pirillo</a>.
-                        </div>
 					</div>
 <?php
 	}
 }
-
-add_action ('admin_menu', array( 'SourceAdmin', 'addMenu' ) );
-register_activation_hook( __FILE__, array( 'SourceAdmin', 'install' ) );
-
-include( ABSPATH . 'wp-content/themes/wicketpixie/app/faves.php');
-include( ABSPATH . 'wp-content/themes/wicketpixie/app/update.php');
-
 ?>

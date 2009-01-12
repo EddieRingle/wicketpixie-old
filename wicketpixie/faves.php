@@ -31,9 +31,9 @@ if ( is_user_logged_in() ) {
 					<?php $i= 0; foreach( $faves->show_faves() as $fave ) { ?>
 						<?php						
 						$class= ( $i++ & 1 ) ? ' odd' : '';
-						require_once (ABSPATH . '/wp-content/plugins/simplepie.php');
+						require_once (ABSPATH . 'wp-content/themes/wicketpixie/plugins/simplepie.php');
 						$feed_path= $fave->feed_url;
-						$feed= new SimplePie( (string) $feed_path, ABSPATH . '/' . (string) '/wp-content/uploads/activity/' );
+						$feed= new SimplePie( (string) $feed_path, ABSPATH . (string) 'wp-content/uploads/activity' );
 						$feed->handle_content_type();
 							if( $feed->data ) {
 						?>

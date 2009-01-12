@@ -299,9 +299,6 @@ class FavesAdmin
 							</p>
 						</form>
 					<?php } ?>
-                    <div id="admin-affiliates">
-                        A free premium Wordpress theme provided by <a href="http://chris.pirillo.com/" title="Chris Pirillo">Chris Pirillo</a>.
-                    </div>
 				</div>
 <?php
 	}

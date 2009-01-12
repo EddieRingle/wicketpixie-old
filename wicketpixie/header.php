@@ -20,10 +20,22 @@
 	<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" />
 	<link rel="shortcut icon" type="image/ico" href="<?php bloginfo('home'); ?>/favicon.ico" />	
 	
-	<?php include (TEMPLATEPATH . '/plugins/random-posts.php'); ?>
-	<?php include (TEMPLATEPATH . '/plugins/related-posts.php'); ?>
-	<?php include (TEMPLATEPATH . '/plugins/search-excerpt.php'); ?>
-	<?php include (TEMPLATEPATH . '/plugins/search-highlight.php'); ?>
+	<?php
+    include_once (TEMPLATEPATH . '/plugins/random-posts.php');
+	include_once (TEMPLATEPATH . '/plugins/related-posts.php');
+	include_once (TEMPLATEPATH . '/plugins/search-excerpt.php');
+	include_once (TEMPLATEPATH . '/plugins/search-highlight.php');
+     
+    clearstatcache();
+    if(!is_dir(ABSPATH.'wp-content/uploads/activity'))
+    {
+        if(!is_Dir(ABSPATH.'wp-content/uploads'))
+        {
+            mkdir(ABSPATH.'wp-content/uploads',0777);
+        }
+        mkdir(ABSPATH.'wp-content/uploads/activity',0777);
+    }
+    ?>
 		
 <?php wp_head(); ?>	
 	
@@ -51,16 +63,16 @@
 	<!-- subscribe -->
 	<div id="subscribe">			
 		<ul>				
-			<li><a href="<? bloginfo('rss2_url') ?>" title="Subscribe to my feed" class="feed">RSS Feed</a></li>
-			<li><a href="http://www.bloglines.com/sub/<? bloginfo('rss2_url') ?>" class="feed">Bloglines</a></li>
-			<li><a href="http://fusion.google.com/add?feedurl=<? bloginfo('rss2_url') ?>" class="feed">Google Reader</a></li>			
-			<li><a href="http://feeds.my.aol.com/add.jsp?url=<? bloginfo('rss2_url') ?>" class="feed">My AOL</a></li>
-			<li><a href="http://my.msn.com/addtomymsn.armx?id=rss&ut=<? bloginfo('rss2_url') ?>&ru=<? echo get_settings('home'); ?>" class="feed">My MSN</a></li>
-			<li><a href="http://add.my.yahoo.com/rss?url=<? bloginfo('rss2_url') ?>" class="feed">My Yahoo!</a></li>
-			<li><a href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=<? bloginfo('rss2_url') ?>" class="feed">NewsGator</a></li>			
-			<li><a href="http://www.pageflakes.com/subscribe.aspx?url=<? bloginfo('rss2_url') ?>" class="feed">Pageflakes</a></li>
-			<li><a href="http://technorati.com/faves?add=<? echo get_settings('home'); ?>" class="feed">Technorati</a></li>
-			<li><a href="http://www.live.com/?add=<? bloginfo('rss2_url') ?>" class="feed">Windows Live</a></li>
+			<li><a href="<?php bloginfo('rss2_url') ?>" title="Subscribe to my feed" class="feed">RSS Feed</a></li>
+			<li><a href="http://www.bloglines.com/sub/<?php bloginfo('rss2_url') ?>" class="feed">Bloglines</a></li>
+			<li><a href="http://fusion.google.com/add?feedurl=<?php bloginfo('rss2_url') ?>" class="feed">Google Reader</a></li>			
+			<li><a href="http://feeds.my.aol.com/add.jsp?url=<?php bloginfo('rss2_url') ?>" class="feed">My AOL</a></li>
+			<li><a href="http://my.msn.com/addtomymsn.armx?id=rss&ut=<?php bloginfo('rss2_url') ?>&ru=<?php echo get_settings('home'); ?>" class="feed">My MSN</a></li>
+			<li><a href="http://add.my.yahoo.com/rss?url=<?php bloginfo('rss2_url') ?>" class="feed">My Yahoo!</a></li>
+			<li><a href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=<?php bloginfo('rss2_url') ?>" class="feed">NewsGator</a></li>			
+			<li><a href="http://www.pageflakes.com/subscribe.aspx?url=<?php bloginfo('rss2_url') ?>" class="feed">Pageflakes</a></li>
+			<li><a href="http://technorati.com/faves?add=<?php echo get_settings('home'); ?>" class="feed">Technorati</a></li>
+			<li><a href="http://www.live.com/?add=<?php bloginfo('rss2_url') ?>" class="feed">Windows Live</a></li>
 		</ul>		
 	</div>
 	<!-- /subscribe -->
