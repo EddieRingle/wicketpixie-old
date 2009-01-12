@@ -1,0 +1,17 @@
+WicketPixie
+
+v1.0 - June 7, 2008
+ * Initial Release
+
+v1.0.1 - June 8, 2008
+ * Updated documentation
+ * Eliminated activity.php error 
+ 
+ v1.0.? - January 4, 2009 by Eddie Ringle
+ * Updated Source Manager and Faves Manager for Wordpress 2.7+
+ as well as leaving it backwards compatible with Wordpress 2.5+
+ * Fixed the activity stream, it now shows your activity stream!
+ * UI improvements to certain WicketPixie forms. For example,
+ if a source has no feed associated, it will show "N/A" on the
+ Sources Manager page. Also, you can't flush non-feed streams,
+ so the buttons to flush them have been removed.
