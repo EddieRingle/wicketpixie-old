@@ -25,3 +25,6 @@ v1.0.3 - January 7, 2009 by Eddie Ringle
  * More UI improvements, now the all the admin pages WicketPixie
  adds load much faster and do not halt in the middle of loading.
  * Updated SimplePie version.
+
+IN PROGRESS - January 18, 2009 by Eddie Ringle
+ * Fixed a few CSS issues
