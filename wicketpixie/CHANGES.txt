@@ -28,3 +28,5 @@ v1.0.3 - January 7, 2009 by Eddie Ringle
 
 IN PROGRESS - January 18, 2009 by Eddie Ringle
  * Fixed a few CSS issues
+ * Plain-text URLs in the Status Updates box are now hyperlinked,
+ now only one click is required for visitors.
