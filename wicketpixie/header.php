@@ -35,6 +35,8 @@
         }
         mkdir(ABSPATH.'wp-content/uploads/activity',0777);
     }
+	
+	$blogfeed = bloginfo('rss2_url'); /* Change this to wherever your blog feed is located. Default is WordPress-generated feed. */
     ?>
 		
 <?php wp_head(); ?>	
@@ -63,16 +65,16 @@
 	<!-- subscribe -->
 	<div id="subscribe">			
 		<ul>				
-			<li><a href="<?php bloginfo('rss2_url') ?>" title="Subscribe to my feed" class="feed">RSS Feed</a></li>
-			<li><a href="http://www.bloglines.com/sub/<?php bloginfo('rss2_url') ?>" class="feed">Bloglines</a></li>
-			<li><a href="http://fusion.google.com/add?feedurl=<?php bloginfo('rss2_url') ?>" class="feed">Google Reader</a></li>			
-			<li><a href="http://feeds.my.aol.com/add.jsp?url=<?php bloginfo('rss2_url') ?>" class="feed">My AOL</a></li>
-			<li><a href="http://my.msn.com/addtomymsn.armx?id=rss&ut=<?php bloginfo('rss2_url') ?>&ru=<?php echo get_settings('home'); ?>" class="feed">My MSN</a></li>
-			<li><a href="http://add.my.yahoo.com/rss?url=<?php bloginfo('rss2_url') ?>" class="feed">My Yahoo!</a></li>
-			<li><a href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=<?php bloginfo('rss2_url') ?>" class="feed">NewsGator</a></li>			
-			<li><a href="http://www.pageflakes.com/subscribe.aspx?url=<?php bloginfo('rss2_url') ?>" class="feed">Pageflakes</a></li>
+			<li><a href="<?php echo $blogfeed; ?>" title="Subscribe to my feed" class="feed">RSS Feed</a></li>
+			<li><a href="http://www.bloglines.com/sub/<?php echo $blogfeed; ?>" class="feed">Bloglines</a></li>
+			<li><a href="http://fusion.google.com/add?feedurl=<?php echo $blogfeed; ?>" class="feed">Google Reader</a></li>			
+			<li><a href="http://feeds.my.aol.com/add.jsp?url=<?php echo $blogfeed; ?>" class="feed">My AOL</a></li>
+			<li><a href="http://my.msn.com/addtomymsn.armx?id=rss&ut=<?php echo $blogfeed; ?>&ru=<?php echo get_settings('home'); ?>" class="feed">My MSN</a></li>
+			<li><a href="http://add.my.yahoo.com/rss?url=<?php echo $blogfeed; ?>" class="feed">My Yahoo!</a></li>
+			<li><a href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=<?php echo $blogfeed; ?>" class="feed">NewsGator</a></li>			
+			<li><a href="http://www.pageflakes.com/subscribe.aspx?url=<?php echo $blogfeed; ?>" class="feed">Pageflakes</a></li>
 			<li><a href="http://technorati.com/faves?add=<?php echo get_settings('home'); ?>" class="feed">Technorati</a></li>
-			<li><a href="http://www.live.com/?add=<?php bloginfo('rss2_url') ?>" class="feed">Windows Live</a></li>
+			<li><a href="http://www.live.com/?add=<?php echo $blogfeed; ?>" class="feed">Windows Live</a></li>
 		</ul>		
 	</div>
 	<!-- /subscribe -->
