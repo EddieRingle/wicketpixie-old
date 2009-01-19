@@ -513,5 +513,6 @@ register_activation_hook( ABSPATH . 'wp-content/themes/wicketpixie/plugins/sourc
 add_action('in_admin_footer', 'wicketpixie_add_admin_footer');
 
 require( ABSPATH . 'wp-content/themes/wicketpixie/app/faves.php');
+require( ABSPATH . 'wp-content/themes/wicketpixie/app/notify.php');
 require( ABSPATH . 'wp-content/themes/wicketpixie/app/update.php');
 ?>
