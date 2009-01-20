@@ -1,7 +1,7 @@
 <?php
 class NotifyAdmin
 {
-	
+        
 	/**
 	* Here we install the tables and initial data needed to
 	* power our special functions
@@ -26,30 +26,6 @@ class NotifyAdmin
 		if( $q != '' ) {
 			dbDelta( $q );
 		}			
-	}
-	
-	private function fetch_remote_file( $file ) {
-		$path = parse_url( $file );
-
-		if ($fs = @fsockopen($path['host'], isset($path['port'])?$path['port']:80)) {
-
-			$header = "GET " . $path['path'] . " HTTP/1.0\r\nHost: " . $path['host'] . "\r\n\r\n";
-
-			fwrite($fs, $header);
-
-			$buffer = '';
-
-			while ($tmp = fread($fs, 1024)) { $buffer .= $tmp; }
-
-			preg_match('/HTTP\/[0-9\.]{1,3} ([0-9]{3})/', $buffer, $http);
-			preg_match('/Location: (.*)/', $buffer, $redirect);
-
-			if (isset($redirect[1]) && $file != trim($redirect[1])) { return self::fetch_remote_file(trim($redirect[1])); }
-
-			if (isset($http[1]) && $http[1] == 200) { return substr($buffer, strpos($buffer, "\r\n\r\n") +4); } else { return false; }
-
-		} else { return false; }
-
 	}
 	
 	public function check() {
@@ -162,6 +138,7 @@ class NotifyAdmin
 	*/
 	public function notifyMenu() {
 		$notify= new NotifyAdmin;
+        $wp_notify = get_option('wp_notify');
 		if ( $_GET['page'] == basename(__FILE__) ) {
 	        if ( 'add' == $_REQUEST['action'] ) {
 				$notify->add( $_REQUEST );
@@ -178,7 +155,12 @@ class NotifyAdmin
 			
 				<div id="admin-options">
 					<h2><?php _e('Service Notification Settings'); ?></h2>
-                    What are Service Notifications? They send out messages to different services like Twitter and Ping.fm to let your followers know of any new blog posts.
+                    <?php if($wp_notify != 1) { ?>
+                    <b>WicketPixie Service Notifications are currently disabled, please go to the WicketPixie Options page to enable them.</b><br />
+                    <?php } ?>
+                    What are Service Notifications? They send out messages to different services like Twitter and Ping.fm to let your followers know of any new blog posts.<br />
+                    Please note, when entering service details, you may only enter in a username and password, you may only enter an API/App key, or you may enter both.<br />
+                    For Ping.fm, you'll only need to enter your App key. For Twitter, you need to enter a username and password.
 					<?php if( $notify->check() != 'false' && $notify->count() != '' ) { ?>
 					<table class="form-table" style="margin-bottom:30px;">
 						<tr>
@@ -212,7 +194,7 @@ class NotifyAdmin
                             </select></p>
                             <p><input type="text" name="username" id="url" onfocus="if(this.value=='Username')value=''" onblur="if(this.value=='')value='Username';" value="Username" /></p>
                             <p><input type="text" name="password" id="url" onfocus="if(this.value=='Password')value=''" onblur="if(this.value=='')value='Password';" value="Password" /></p>
-                            <p><input type="text" name="apikey" id="url" onfocus="if(this.value=='API/App Key')value=''" onblur="if(this.value=='')value='API/App Key';" value="API Key" /></p>
+                            <p><input type="text" name="apikey" id="url" onfocus="if(this.value=='API/App Key')value=''" onblur="if(this.value=='')value='API/App Key';" value="API/App Key" /></p>
                             <p class="submit">
                                 <input name="save" type="submit" value="Add Service" /> 
                                 <input type="hidden" name="action" value="add" />
@@ -222,6 +204,137 @@ class NotifyAdmin
 <?php
 	}
 }
+$wp_notify = get_option('wp_notify');
+/**
+* This gets called when a post gets published and
+* prepares to notify all services listed in the database
+*/
+function prep_notify($id) {
+    global $wpdb;
+    $table = $wpdb->posts;
+    $post['title'] = $wpdb->get_var("SELECT post_title FROM $table WHERE ID=$id");
+    $post['link'] = get_permalink($id);
+    $post['id'] = $id;
+    
+    // Developer API Keys DO NOT MODIFY FOR ANY REASON!
+    $devkeys = array(
+    "ping.fm" => "7cf76eb04856576acaec0b2abd2da88b"
+    );
+    
+    notify($post,$devkeys);
+    return $id;
+}
+
+/**
+* This calls each services' notification function
+*/
+function notify($post,$devkeys) {
+$notify = new NotifyAdmin();
+    foreach($notify->collect() as $services) {
+        if($services->service == 'ping.fm') {
+            $errnum = notify_pingfm($post,$services->apikey,$devkeys['ping.fm']);
+        }
+        elseif($services->service == 'twitter') {
+            $errnum = notify_twitter($post,$services);
+        }
+    }
+}
+
+/**
+* Executes a cURL request and returns the output
+*/
+function notify_go($service,$type,$postdata,$ident) {
+    if($service == 'ping.fm')
+    {
+        // Set the url based on type
+        $url = "http://api.ping.fm/v1/".$type;
+        
+        // Setup cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+        
+        // Send the data and close up shop
+        $output = curl_exec($ch);
+        curl_close($ch);
+        
+        return $output;
+    }
+    elseif($service == 'twitter')
+    {
+        // Tidy $postdata before sending it
+        $postdata = urlencode(stripslashes(urldecode($postdata)));
+        
+        // Set the url based on type and add the POST data
+        $url = "http://twitter.com/".$type."?status=".$postdata;
+        
+        // Setup cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($ch, CURLOPT_USERPWD, $ident['user'].":".$ident['pass']);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        // Send the data and fetch the HTTP code
+        $output = curl_exec($ch);
+        $outArray = curl_getinfo($ch);
+        
+        if($outArray['http_code'] == 200)
+        {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}
+
+/**
+* Ping.fm notification function
+*/
+function notify_pingfm($post,$appkey,$apikey) {
+    // Message to be sent
+    $message = $post['title'] . " ~ " . $post['link'];
+    
+    // First, we validate the user's app key
+    $postdata = array('api_key' => $apikey, 'user_app_key' => $appkey);
+    $apicall = "user.validate";
+    $output = notify_go('ping.fm',$apicall,$postdata,NULL);
+    
+    if(preg_match("/(<rsp status=\"OK\">)/",$output))
+    {
+        // Okay, app key validated, now we can continue
+        $postdata = array('api_key' => $apikey, 'user_app_key' => $appkey, 'post_method' => 'status', 'body' => $message);
+        $apicall = "user.post";
+        $output = notify_go('ping.fm',$apicall,$postdata,NULL);
+        $success = preg_match("/(<rsp status=\"OK\">)/",$output);
+        return $success;
+    }
+}
+
+/**
+* Twitter notification function
+*/
+function notify_twitter($post,$dbdata) {
+    // Message to be sent
+    $message = $post['title'] . " ~ " . $post['link'];
+    
+    // Put username and password into an array for easier passing
+    $ident = array("user" => $dbdata->username,"pass" => $dbdata->password);
+    
+    // Choose update format (update.xml or update.json)
+    $type = "statuses/update.xml";
+    
+    $success = notify_go('twitter',$type,$message,$ident);
+    return $success;
+}
+
 add_action ('admin_menu', array( 'NotifyAdmin', 'addNotifyMenu' ) );
+if($wp_notify == 1)
+{
+    add_action ('publish_post', 'prep_notify');
+}
 NotifyAdmin::install();
 ?>

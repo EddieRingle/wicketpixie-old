@@ -173,8 +173,14 @@ $settings= array(
 		"id"	=>	$shortname . "_auth_credit",
 		"std"	=>	1,
 		"status" => 'checked',
-		"type"	=>	'checkbox')	
-		
+		"type"	=>	'checkbox'),
+    array(
+        "name"  =>  "Enable WicketPixie Notifications",
+        "description"   => "Check this if you want WicketPixie to notify services like Ping.fm about your new blog posts, as configured on the WicketPixie Notifications page.",
+		"id"    =>  $shortname."_notify",
+        "std"   =>  1,
+        "status"    => 'checked',
+        "type"  => 'checkbox')
 );
 
 function wicketpixie_add_admin_footer() {
@@ -188,7 +194,7 @@ function wicketpixie_add_admin() {
         if ( 'save' == $_REQUEST['action'] ) {
             foreach ( $options as $value ) {
 				update_option( $value['id'], $_REQUEST[ $value['id'] ] ); 
-		}
+            }
 
             foreach ( $options as $value ) {
 				if( isset( $_REQUEST[ $value['id'] ] ) ) { 
@@ -226,23 +232,23 @@ function wicketpixie_add_admin() {
             die;
 		
 		} elseif ( 'save_settings' == $_REQUEST['action'] ) {
-	            foreach ( $settings as $value ) {
-					update_option( $value['id'], $_REQUEST[ $value['id'] ] ); 
-			}
+            foreach ( $settings as $value ) {
+                update_option( $value['id'], $_REQUEST[ $value['id'] ] ); 
+            }
 
-	           foreach ( $settings as $value ) {
-				if( isset( $_REQUEST[ $value['id'] ] ) ) { 
-					if( $value['type'] == 'checkbox' ) {
-						if( $value['status'] == 'checked' ) {
-							update_option( $value['id'], 1 );
-						} else { 
-							update_option( $value['id'], 0 ); 
-						}	
-					} elseif( $value['type'] != 'checkbox' ) {
-						update_option( $value['id'], $_REQUEST[ $value['id'] ]  ); 
-					} else { 
-						update_option( $value['id'], $_REQUEST[ $value['id'] ] ); 
-					}
+	        foreach ( $settings as $value ) {
+                if( isset( $_REQUEST[ $value['id'] ] ) ) { 
+                    if( $value['type'] == 'checkbox' ) {
+                        if( $value['status'] == 'checked' ) {
+                            update_option( $value['id'], 1 );
+                        } else { 
+                            update_option( $value['id'], 0 ); 
+                        }	
+                    } elseif( $value['type'] != 'checkbox' ) {
+                        update_option( $value['id'], $_REQUEST[ $value['id'] ]  ); 
+                    } else { 
+                        update_option( $value['id'], $_REQUEST[ $value['id'] ] ); 
+                    }
 				}
 			}
 
@@ -385,19 +391,19 @@ function wicketpixie_admin() {
 		<table class="form-table">
 			<?php foreach( $settings as $value ) { ?>
 			<tr valign="top"> 
-				<th scope="row" style="font-size:12px; text-align:left; padding-right:10px;">
+				<td>
+					<acronym title="<?php echo $value['description']; ?>"><?php echo $value['name']; ?></acronym>
+				</td>
+				<th scope="row" style="font-size:12px; text-align:right;">
 					<?php
-						if ( get_option( $value['id'] ) != "" ) { 
-							$status= get_option( $value['id'] );
+						if (get_option($value['id'] != false)) { 
+							$status= get_option($value['id']);
 						} else { 
 							$status= $value['std']; 
 						}
 					?>
-					<input name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>" type="<?php echo $value['type']; ?>" value="<?php if ( get_option( $value['id'] ) != "") { echo get_option( $value['id'] ); } else { echo $value['std']; } ?>" <?php if( $status == 1 ) { echo 'checked'; } ?>/>
+					<input name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>" type="<?php echo $value['type']; ?>" value="<?php echo $value['id']; ?>" checked="<?php if($status == 1) { echo 'checked'; } ?>" />
 				</th>
-				<td style="padding-bottom:10px;">
-					<acronym title="<?php echo $value['description']; ?>"><?php echo $value['name']; ?></acronym>
-				</td>
 			</tr>
 			<?php } ?>
 		</table>
