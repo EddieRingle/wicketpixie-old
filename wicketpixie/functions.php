@@ -1,7 +1,7 @@
 <?php
 include_once( ABSPATH . 'wp-content/themes/wicketpixie/widgets/sources.php' );
 
-define('WIK_VERSION','1.0.3');
+define('WIK_VERSION','1.0.4');
 
 function collect() {
 	global $wpdb;
