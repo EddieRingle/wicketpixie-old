@@ -15,6 +15,11 @@ I am releasing this theme for free but expect that you can figure out what is
 going on if you have ever used a WordPress theme before. You are pretty much on
 your own at this point. 
 
+INSTALLING
+
+Just place the wicketpixie folder in your /wp-content/themes/ directory and
+then activate the theme.
+
 UPGRADING
 
 Please see UPGRADING.txt for more information about upgrading to a new version
