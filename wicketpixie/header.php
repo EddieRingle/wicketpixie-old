@@ -1,3 +1,7 @@
+<?php
+/* Change this to wherever your blog feed is located. Default is WordPress-generated feed. */
+$blogfeed = bloginfo('rss2_url');
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" <?php language_attributes(); ?>>
@@ -16,7 +20,7 @@
 	<!--[if gte IE 7]><link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/css/ie7.css" type="text/css" media="screen, projection" /><![endif]-->
 	<!--[if lte IE 6]><link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/css/ie6.css" type="text/css" media="screen, projection" /><![endif]-->	
 	
-	<link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> RSS Feed" href="<?php bloginfo('rss2_url'); ?>" />
+	<link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name'); ?> RSS Feed" href="<?php echo $blogfeed; ?>" />
 	<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" />
 	<link rel="shortcut icon" type="image/ico" href="<?php bloginfo('home'); ?>/favicon.ico" />	
 	
@@ -35,8 +39,6 @@
         }
         mkdir(ABSPATH.'wp-content/uploads/activity',0777);
     }
-	
-	$blogfeed = bloginfo('rss2_url'); /* Change this to wherever your blog feed is located. Default is WordPress-generated feed. */
     ?>
 		
 <?php wp_head(); ?>	
