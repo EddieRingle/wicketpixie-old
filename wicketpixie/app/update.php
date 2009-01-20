@@ -24,20 +24,20 @@ class SourceUpdate
         SourceAdmin::clean_dir();
 
         $feed->handle_content_type();
-            if( $feed->data ) {
-                foreach( $feed->get_items() as $entry ) {
-                    $name= $stream->title;
-                    $update[]['name']= (string) $name;
-                    $update[]['title']= $entry->get_title();
-                    $update[]['link']= $entry->get_permalink();
-                    $update[]['date']= strtotime( substr( $entry->get_date(), 0, 25 ) );
-                }
-				
-                $return= array_slice( $update, 0, 5);	
+        if( $feed->data ) {
+            foreach( $feed->get_items() as $entry ) {
+                $name= $stream->title;
+                $update[]['name']= (string) $name;
+                $update[]['title']= $entry->get_title();
+                $update[]['link']= $entry->get_permalink();
+                $update[]['date']= strtotime( substr( $entry->get_date(), 0, 25 ) );
+            }
+            
+            @$return= array_slice( $update, 0, 5);
 
-				$return[1]['title'] = preg_replace('((?:\S)+://\S+[[:alnum:]]/?)', '<a href="\0">\0</a>', $return[1]['title']);
-				
-                return substr($return[1]['title'], 0, 150) . ' &mdash; <a href="' . $return[2]['link'] . '" title="">' . date( 'g:ia', $return[3]['date'] ) . '</a>';
+            $return[1]['title'] = preg_replace('((?:\S)+://\S+[[:alnum:]]/?)', '<a href="\0">\0</a>', $return[1]['title']);
+            
+            return substr($return[1]['title'], 0, 150) . ' &mdash; <a href="' . $return[2]['link'] . '" title="">' . date( 'g:ia', $return[3]['date'] ) . '</a>';
         } else {
             return 'No source configured.';
         }
