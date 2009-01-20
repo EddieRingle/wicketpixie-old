@@ -303,13 +303,13 @@ function notify_pingfm($post,$appkey,$apikey) {
     $apicall = "user.validate";
     $output = notify_go('ping.fm',$apicall,$postdata,NULL);
     
-    if(preg_match("/(<rsp status=\"OK\">)/",$output))
+    if(preg_match('/<rsp status="OK">/',$output))
     {
         // Okay, app key validated, now we can continue
         $postdata = array('api_key' => $apikey, 'user_app_key' => $appkey, 'post_method' => 'status', 'body' => $message);
         $apicall = "user.post";
         $output = notify_go('ping.fm',$apicall,$postdata,NULL);
-        $success = preg_match("/(<rsp status=\"OK\">)/",$output);
+        $success = preg_match('/<rsp status="OK">/',$output);
         return $success;
     }
 }
