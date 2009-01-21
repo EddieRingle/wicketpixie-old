@@ -29,7 +29,7 @@ $blogfeed = bloginfo('rss2_url');
 	include_once (TEMPLATEPATH . '/plugins/related-posts.php');
 	include_once (TEMPLATEPATH . '/plugins/search-excerpt.php');
 	include_once (TEMPLATEPATH . '/plugins/search-highlight.php');
-     
+    
     clearstatcache();
     if(!is_dir(ABSPATH.'wp-content/uploads/activity'))
     {
@@ -39,8 +39,11 @@ $blogfeed = bloginfo('rss2_url');
         }
         mkdir(ABSPATH.'wp-content/uploads/activity',0777);
     }
-    ?>
-		
+    
+    if(is_user_logged_in()) { ?>
+    <script src="http://myintarweb.uservoice.com/pages/general/widgets/tab.js?alignment=left&amp;color=00BCBA" type="text/javascript"></script>
+    <?php } ?>
+    
 <?php wp_head(); ?>	
 	
 </head>

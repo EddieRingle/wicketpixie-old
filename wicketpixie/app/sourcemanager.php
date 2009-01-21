@@ -174,7 +174,7 @@ class SourceAdmin {
 	
 	private function get_streams() {
 		global $wpdb;
-		require_once ( ABSPATH . 'wp-content/themes/wicketpixie/plugins/simplepie.php' );
+		require_once ('simplepie.php');
 		self::clean_dir();
 
 		$table= $wpdb->prefix . 'wik_sources';
@@ -331,15 +331,16 @@ class SourceAdmin {
 		$table= $wpdb->prefix . 'wik_sources';
 		if( $args['title'] != 'Source Title' ) {
 		if( !$wpdb->get_var( "SELECT id FROM $table WHERE feed_url = '" . $args['url'] . "'" ) ) {
-		$i= "INSERT INTO " . $table . " (id,title,profile_url,feed_url,type,lifestream,updates) VALUES('', '" 
+        $favicon url = explode('/', $args['profile']);
+		$i= "INSERT INTO " . $table . " (id,title,profile_url,feed_url,type,lifestream,updates,favicon) VALUES('', '" 
 		. $args['title'] . "','" 
 		. $args['profile'] . "', '" 
 		. $dbfeedurl . "', " 
 		. $args['type'] . ", " 
 		. $stream . ", "
-		. $update . ")";
+		. $update . ", "
+        . "'http://www.google.com/s2/favicons?domain=$favicon_url[2]')";
 		$query= $wpdb->query( $i );
-		self::favicache( $args['profile'], $args['title'] );
         self::create_widget();
 		$message= 'Source Saved';
 		} else {
@@ -392,7 +393,6 @@ class SourceAdmin {
 						", updates = " . $update .
 						" WHERE id = " . $args['id'];
 			$query= $wpdb->query( $u );
-			self::favicache( $args['profile'], $args['title'] );
 			self::create_widget();
 	}
 	
@@ -467,11 +467,11 @@ class SourceAdmin {
 	}
 
 	public function get_feed( $url ) {
-        require_once (ABSPATH . 'wp-content/themes/wicketpixie/plugins/simplepie.php');
+        require_once ('simplepie.php');
         $feed_path= $url;
         $feed= new SimplePie( (string) $feed_path, ABSPATH . (string) 'wp-content/uploads/activity' );
 
-        self::clean_dir();
+        SourceAdmin::clean_dir();
 
         $feed->handle_content_type();
             if( $feed->data ) {
@@ -494,12 +494,13 @@ class SourceAdmin {
 		$cleaned= strtolower( $widget->title );
 		$cleaned= preg_replace( '/\W/', ' ', $cleaned );
 		$cleaned= str_replace( " ", "", $cleaned );
+        $favicon_url = explode('/', $widget->profile_url);
 		
 		$data= '';
 		$data .= '<?php' . "\n";
 		$data .= '$total= 5;' . "\n";
 		$data .= 'echo \'<div class="widget">\';' . "\n";
-		$data .= "echo '<h3><img src=\"$widget->favicon\" alt=\"$widget->title\" />$widget->title</h3>';" . "\n";
+		$data .= "echo '<h3><img src=\"http://www.google.com/s2/favicons?domain=$favicon_url[2]\" alt=\"$widget->title\" />$widget->title</h3>';" . "\n";
 		$data .= "echo '<ul>';" . "\n";
 		$data .= '$items= SourceAdmin::get_feed( "'. $widget->feed_url . '" );
 		foreach( $items as $item ) {
